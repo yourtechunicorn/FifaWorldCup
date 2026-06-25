@@ -62,29 +62,30 @@ const STATUS_CONFIG = {
 // All remaining group stage matches — stored as UTC timestamps
 // Format: { home, away, group, utc }
 // Jun 25 4PM ET = 20:00 UTC; 7PM ET = 23:00 UTC; 10PM ET = 02:00 UTC Jun 26
+// Status is computed dynamically from the clock — no hardcoded status needed
 const SCHEDULE = [
-  // Jun 25 (today)
-  { home:"Ecuador",     away:"Germany",      group:"E", utc:"2026-06-25T20:00:00Z", venue:"MetLife Stadium, NJ",       status:"live"     },
-  { home:"Curaçao",     away:"Ivory Coast",  group:"E", utc:"2026-06-25T20:00:00Z", venue:"Lincoln Financial, PA",      status:"live"     },
-  { home:"Japan",       away:"Sweden",       group:"F", utc:"2026-06-25T23:00:00Z", venue:"AT&T Stadium, Dallas",       status:"upcoming" },
-  { home:"Tunisia",     away:"Netherlands",  group:"F", utc:"2026-06-25T23:00:00Z", venue:"Arrowhead Stadium, KC",      status:"upcoming" },
-  { home:"Turkey",      away:"USA",          group:"D", utc:"2026-06-26T02:00:00Z", venue:"SoFi Stadium, LA",           status:"upcoming" },
-  { home:"Paraguay",    away:"Australia",    group:"D", utc:"2026-06-26T02:00:00Z", venue:"Levi's Stadium, SF",         status:"upcoming" },
-  // Jun 26
-  { home:"Norway",      away:"France",       group:"I", utc:"2026-06-26T19:00:00Z", venue:"Gillette Stadium, Boston",   status:"upcoming" },
-  { home:"Senegal",     away:"Iraq",         group:"I", utc:"2026-06-26T19:00:00Z", venue:"BMO Field, Toronto",         status:"upcoming" },
-  { home:"Egypt",       away:"Iran",         group:"G", utc:"2026-06-27T03:00:00Z", venue:"Lumen Field, Seattle",       status:"upcoming" },
-  { home:"New Zealand", away:"Belgium",      group:"G", utc:"2026-06-27T03:00:00Z", venue:"BC Place, Vancouver",        status:"upcoming" },
-  { home:"Cape Verde",  away:"Saudi Arabia", group:"H", utc:"2026-06-27T00:00:00Z", venue:"NRG Stadium, Houston",       status:"upcoming" },
-  // Jun 27
-  { home:"Uruguay",     away:"Spain",        group:"H", utc:"2026-06-28T00:00:00Z", venue:"Estadio Akron, Guadalajara", status:"upcoming" },
-  { home:"Panama",      away:"England",      group:"L", utc:"2026-06-28T02:00:00Z", venue:"MetLife Stadium, NJ",        status:"upcoming" },
-  { home:"Croatia",     away:"Ghana",        group:"L", utc:"2026-06-28T02:00:00Z", venue:"Lincoln Financial, PA",      status:"upcoming" },
-  { home:"Algeria",     away:"Austria",      group:"J", utc:"2026-06-28T02:00:00Z", venue:"Arrowhead Stadium, KC",      status:"upcoming" },
-  { home:"Jordan",      away:"Argentina",    group:"J", utc:"2026-06-28T02:00:00Z", venue:"AT&T Stadium, Dallas",       status:"upcoming" },
-  // Jun 28
-  { home:"Colombia",    away:"Portugal",     group:"K", utc:"2026-06-29T02:00:00Z", venue:"Hard Rock Stadium, Miami",   status:"upcoming" },
-  { home:"Uzbekistan",  away:"DR Congo",     group:"K", utc:"2026-06-29T02:00:00Z", venue:"Mercedes-Benz, Atlanta",     status:"upcoming" },
+  // Jun 25 ET (Jun 26 PHT)
+  { home:"Ecuador",     away:"Germany",      group:"E", utc:"2026-06-25T20:00:00Z", venue:"MetLife Stadium, NJ",        durationMins:105 },
+  { home:"Curaçao",     away:"Ivory Coast",  group:"E", utc:"2026-06-25T20:00:00Z", venue:"Lincoln Financial, PA",      durationMins:105 },
+  { home:"Japan",       away:"Sweden",       group:"F", utc:"2026-06-25T23:00:00Z", venue:"AT&T Stadium, Dallas",       durationMins:105 },
+  { home:"Tunisia",     away:"Netherlands",  group:"F", utc:"2026-06-25T23:00:00Z", venue:"Arrowhead Stadium, KC",      durationMins:105 },
+  { home:"Turkey",      away:"USA",          group:"D", utc:"2026-06-26T02:00:00Z", venue:"SoFi Stadium, LA",           durationMins:105 },
+  { home:"Paraguay",    away:"Australia",    group:"D", utc:"2026-06-26T02:00:00Z", venue:"Levi's Stadium, SF",         durationMins:105 },
+  // Jun 26 ET (Jun 27 PHT)
+  { home:"Norway",      away:"France",       group:"I", utc:"2026-06-26T19:00:00Z", venue:"Gillette Stadium, Boston",   durationMins:105 },
+  { home:"Senegal",     away:"Iraq",         group:"I", utc:"2026-06-26T19:00:00Z", venue:"BMO Field, Toronto",         durationMins:105 },
+  { home:"Cape Verde",  away:"Saudi Arabia", group:"H", utc:"2026-06-27T00:00:00Z", venue:"NRG Stadium, Houston",       durationMins:105 },
+  { home:"Egypt",       away:"Iran",         group:"G", utc:"2026-06-27T03:00:00Z", venue:"Lumen Field, Seattle",       durationMins:105 },
+  { home:"New Zealand", away:"Belgium",      group:"G", utc:"2026-06-27T03:00:00Z", venue:"BC Place, Vancouver",        durationMins:105 },
+  // Jun 27 ET (Jun 28 PHT)
+  { home:"Uruguay",     away:"Spain",        group:"H", utc:"2026-06-28T00:00:00Z", venue:"Estadio Akron, Guadalajara", durationMins:105 },
+  { home:"Panama",      away:"England",      group:"L", utc:"2026-06-28T02:00:00Z", venue:"MetLife Stadium, NJ",        durationMins:105 },
+  { home:"Croatia",     away:"Ghana",        group:"L", utc:"2026-06-28T02:00:00Z", venue:"Lincoln Financial, PA",      durationMins:105 },
+  { home:"Algeria",     away:"Austria",      group:"J", utc:"2026-06-28T02:00:00Z", venue:"Arrowhead Stadium, KC",      durationMins:105 },
+  { home:"Jordan",      away:"Argentina",    group:"J", utc:"2026-06-28T02:00:00Z", venue:"AT&T Stadium, Dallas",       durationMins:105 },
+  // Jun 28 ET (Jun 29 PHT)
+  { home:"Colombia",    away:"Portugal",     group:"K", utc:"2026-06-29T02:00:00Z", venue:"Hard Rock Stadium, Miami",   durationMins:105 },
+  { home:"Uzbekistan",  away:"DR Congo",     group:"K", utc:"2026-06-29T02:00:00Z", venue:"Mercedes-Benz, Atlanta",     durationMins:105 },
 ];
 
 const THIRD_TEAMS = [
@@ -457,8 +458,11 @@ export default function App() {
               <div style={{ display:"flex", flexDirection:"column", gap:"8px" }}>
                 {matches.map((m, i) => {
                   const kickoff = new Date(m.utc);
-                  const isPast = now > kickoff;
-                  const isLive = m.status === "live";
+                  const kickoffMs = kickoff.getTime();
+                  const nowMs = now.getTime();
+                  const endMs = kickoffMs + (m.durationMins || 105) * 60 * 1000;
+                  const isLive = nowMs >= kickoffMs && nowMs <= endMs;
+                  const isPast = nowMs > endMs;
                   const timeLocal = kickoff.toLocaleTimeString(undefined, { hour:"numeric", minute:"2-digit" });
                   return (
                     <div key={i} style={{
