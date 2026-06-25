@@ -17,14 +17,14 @@ const ALL_TEAMS = [
   { name:"Australia",    group:"D", pos:2, pts:4,  status:"likely_in",  prob:93,   note:"Playing Paraguay tonight" },
   { name:"Paraguay",     group:"D", pos:3, pts:3,  status:"bubble",     prob:89,   note:"Playing Australia tonight" },
   { name:"Turkey",       group:"D", pos:4, pts:0,  status:"eliminated", prob:0,    note:"Confirmed out" },
-  { name:"Germany",      group:"E", pos:1, pts:6,  status:"confirmed",  prob:null, note:"Group winner" },
-  { name:"Ivory Coast",  group:"E", pos:2, pts:4,  status:"likely_in",  prob:99,   note:"Playing Curaçao today" },
-  { name:"Ecuador",      group:"E", pos:3, pts:1,  status:"likely_out", prob:13,   note:"Playing Germany today · tough ask" },
-  { name:"Curaçao",      group:"E", pos:4, pts:1,  status:"likely_out", prob:5,    note:"Playing Ivory Coast today" },
-  { name:"Netherlands",  group:"F", pos:1, pts:7,  status:"confirmed",  prob:null, note:"Group winner" },
-  { name:"Japan",        group:"F", pos:2, pts:4,  status:"likely_in",  prob:87,   note:"Playing Sweden today" },
-  { name:"Sweden",       group:"F", pos:3, pts:3,  status:"bubble",     prob:96,   note:"3rd place contender · playing Japan" },
-  { name:"Tunisia",      group:"F", pos:4, pts:0,  status:"eliminated", prob:0,    note:"Confirmed out" },
+  { name:"Germany",      group:"E", pos:1, pts:6,  status:"confirmed",  prob:null, note:"Runner-up after shock loss to Ecuador" },
+  { name:"Ivory Coast",  group:"E", pos:2, pts:7,  status:"confirmed",  prob:null, note:"W 2–0 vs Curaçao · confirmed through" },
+  { name:"Ecuador",      group:"E", pos:3, pts:4,  status:"confirmed",  prob:null, note:"UPSET! W 2–1 vs Germany · confirmed through" },
+  { name:"Curaçao",      group:"E", pos:4, pts:1,  status:"eliminated", prob:0,    note:"L 0–2 vs Ivory Coast · eliminated" },
+  { name:"Netherlands",  group:"F", pos:1, pts:7,  status:"confirmed",  prob:null, note:"Group winner · leading Tunisia 2–0 (27')" },
+  { name:"Japan",        group:"F", pos:2, pts:4,  status:"likely_in",  prob:87,   note:"🔴 LIVE vs Sweden · 0–0" },
+  { name:"Sweden",       group:"F", pos:3, pts:3,  status:"bubble",     prob:96,   note:"🔴 LIVE vs Japan · 0–0" },
+  { name:"Tunisia",      group:"F", pos:4, pts:0,  status:"eliminated", prob:0,    note:"Confirmed out · losing 0–2 to Netherlands" },
   { name:"Egypt",        group:"G", pos:1, pts:4,  status:"likely_in",  prob:78,   note:"Playing Iran Jun 26" },
   { name:"Iran",         group:"G", pos:2, pts:2,  status:"bubble",     prob:33,   note:"Playing Egypt Jun 26" },
   { name:"Belgium",      group:"G", pos:3, pts:2,  status:"bubble",     prob:96,   note:"3rd place contender · vs NZ Jun 27" },
@@ -65,8 +65,8 @@ const STATUS_CONFIG = {
 // Status is computed dynamically from the clock — no hardcoded status needed
 const SCHEDULE = [
   // Jun 25 ET (Jun 26 PHT)
-  { home:"Ecuador",     away:"Germany",      group:"E", utc:"2026-06-25T20:00:00Z", venue:"MetLife Stadium, NJ",        durationMins:105 },
-  { home:"Curaçao",     away:"Ivory Coast",  group:"E", utc:"2026-06-25T20:00:00Z", venue:"Lincoln Financial, PA",      durationMins:105 },
+  { home:"Ecuador",     away:"Germany",      group:"E", utc:"2026-06-25T20:00:00Z", venue:"MetLife Stadium, NJ",        durationMins:105, score:"2–1" },
+  { home:"Curaçao",     away:"Ivory Coast",  group:"E", utc:"2026-06-25T20:00:00Z", venue:"Lincoln Financial, PA",      durationMins:105, score:"0–2" },
   { home:"Japan",       away:"Sweden",       group:"F", utc:"2026-06-25T23:00:00Z", venue:"AT&T Stadium, Dallas",       durationMins:105 },
   { home:"Tunisia",     away:"Netherlands",  group:"F", utc:"2026-06-25T23:00:00Z", venue:"Arrowhead Stadium, KC",      durationMins:105 },
   { home:"Turkey",      away:"USA",          group:"D", utc:"2026-06-26T02:00:00Z", venue:"SoFi Stadium, LA",           durationMins:105 },
@@ -339,7 +339,7 @@ export default function App() {
       {tab === 1 && (
         <div style={{ padding:"18px 24px" }}>
           <div style={{ background:"#fef9c3", border:"1px solid #fde047", borderRadius:"8px", padding:"10px 14px", marginBottom:"14px", fontSize:"12px", color:"#854d0e" }}>
-            🚨 <strong>Key update Jun 25:</strong> Mexico won Group A (9 pts, GD +5). South Africa upset S.Korea 1–0. Czechia eliminated.
+            🚨 <strong>Updates Jun 25:</strong> Ecuador 2–1 Germany (massive upset!) · Ivory Coast 2–0 Curaçao · Japan vs Sweden &amp; Netherlands vs Tunisia 🔴 LIVE now · Turkey/USA &amp; Paraguay/Australia kick off 10PM ET
           </div>
           <div style={{ display:"flex", alignItems:"center", gap:"12px", marginBottom:"14px" }}>
             <label style={{ fontSize:"12px", color:"#64748b", display:"flex", alignItems:"center", gap:"6px", cursor:"pointer" }}>
@@ -486,7 +486,7 @@ export default function App() {
                       {/* Match */}
                       <div style={{ flex:1, display:"flex", alignItems:"center", gap:"8px" }}>
                         <span style={{ fontSize:"13px", fontWeight:"600", color:"#1e293b", textAlign:"right", flex:1 }}>{m.home}</span>
-                        <span style={{ fontSize:"11px", color:"#94a3b8", fontWeight:"500", flexShrink:0 }}>vs</span>
+                        <span style={{ fontSize:"11px", color:"#94a3b8", fontWeight:"500", flexShrink:0 }}>{m.score ? <strong style={{color:"#1e293b",fontSize:"13px"}}>{m.score}</strong> : "vs"}</span>
                         <span style={{ fontSize:"13px", fontWeight:"600", color:"#1e293b", flex:1 }}>{m.away}</span>
                       </div>
 
