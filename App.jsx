@@ -1,63 +1,50 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
-// Advancement probabilities derived from FOX Sports odds (June 24 2026)
 const ALL_TEAMS = [
-  // GROUP A
   { name:"Mexico",       group:"A", pos:1, pts:9,  status:"confirmed",  prob:null, note:"Won all 3 — Group winner" },
   { name:"South Korea",  group:"A", pos:2, pts:3,  status:"bubble",     prob:96,   note:"Lost to S.Africa · 3rd place battle" },
   { name:"South Africa", group:"A", pos:3, pts:3,  status:"bubble",     prob:25,   note:"Upset S.Korea · 3pts GD TBD" },
   { name:"Czechia",      group:"A", pos:4, pts:1,  status:"eliminated", prob:0,    note:"Lost 0–3 to Mexico" },
-  // GROUP B
   { name:"Switzerland",  group:"B", pos:1, pts:7,  status:"confirmed",  prob:null, note:"Group winner" },
   { name:"Canada",       group:"B", pos:2, pts:4,  status:"confirmed",  prob:null, note:"Runner-up confirmed" },
   { name:"Bosnia",       group:"B", pos:3, pts:4,  status:"likely_in",  prob:80,   note:"W 3–1 vs Qatar · strong 3rd" },
   { name:"Qatar",        group:"B", pos:4, pts:1,  status:"eliminated", prob:0,    note:"Confirmed out" },
-  // GROUP C
   { name:"Brazil",       group:"C", pos:1, pts:7,  status:"confirmed",  prob:null, note:"Group winner" },
   { name:"Morocco",      group:"C", pos:2, pts:7,  status:"confirmed",  prob:null, note:"Runner-up confirmed" },
   { name:"Scotland",     group:"C", pos:3, pts:3,  status:"bubble",     prob:83,   note:"L 0–3 Brazil · GD –3 · needs help" },
   { name:"Haiti",        group:"C", pos:4, pts:0,  status:"eliminated", prob:0,    note:"Confirmed out" },
-  // GROUP D
   { name:"USA",          group:"D", pos:1, pts:6,  status:"confirmed",  prob:null, note:"Group winner" },
   { name:"Australia",    group:"D", pos:2, pts:4,  status:"likely_in",  prob:93,   note:"Playing Paraguay tonight" },
   { name:"Paraguay",     group:"D", pos:3, pts:3,  status:"bubble",     prob:89,   note:"Playing Australia tonight" },
   { name:"Turkey",       group:"D", pos:4, pts:0,  status:"eliminated", prob:0,    note:"Confirmed out" },
-  // GROUP E
   { name:"Germany",      group:"E", pos:1, pts:6,  status:"confirmed",  prob:null, note:"Group winner" },
   { name:"Ivory Coast",  group:"E", pos:2, pts:4,  status:"likely_in",  prob:99,   note:"Playing Curaçao today" },
   { name:"Ecuador",      group:"E", pos:3, pts:1,  status:"likely_out", prob:13,   note:"Playing Germany today · tough ask" },
   { name:"Curaçao",      group:"E", pos:4, pts:1,  status:"likely_out", prob:5,    note:"Playing Ivory Coast today" },
-  // GROUP F
   { name:"Netherlands",  group:"F", pos:1, pts:7,  status:"confirmed",  prob:null, note:"Group winner" },
   { name:"Japan",        group:"F", pos:2, pts:4,  status:"likely_in",  prob:87,   note:"Playing Sweden today" },
   { name:"Sweden",       group:"F", pos:3, pts:3,  status:"bubble",     prob:96,   note:"3rd place contender · playing Japan" },
   { name:"Tunisia",      group:"F", pos:4, pts:0,  status:"eliminated", prob:0,    note:"Confirmed out" },
-  // GROUP G
   { name:"Egypt",        group:"G", pos:1, pts:4,  status:"likely_in",  prob:78,   note:"Playing Iran Jun 26" },
   { name:"Iran",         group:"G", pos:2, pts:2,  status:"bubble",     prob:33,   note:"Playing Egypt Jun 26" },
   { name:"Belgium",      group:"G", pos:3, pts:2,  status:"bubble",     prob:96,   note:"3rd place contender · vs NZ Jun 27" },
   { name:"New Zealand",  group:"G", pos:4, pts:1,  status:"likely_out", prob:11,   note:"Playing Belgium Jun 27" },
-  // GROUP H
   { name:"Spain",        group:"H", pos:1, pts:7,  status:"confirmed",  prob:null, note:"Confirmed through" },
   { name:"Uruguay",      group:"H", pos:2, pts:3,  status:"bubble",     prob:44,   note:"Playing Spain Jun 27" },
   { name:"Cape Verde",   group:"H", pos:3, pts:2,  status:"bubble",     prob:40,   note:"3rd place contender · vs S.Arabia" },
   { name:"Saudi Arabia", group:"H", pos:4, pts:1,  status:"likely_out", prob:10,   note:"Playing Cape Verde Jun 26" },
-  // GROUP I
   { name:"France",       group:"I", pos:1, pts:6,  status:"confirmed",  prob:null, note:"Group winner" },
   { name:"Norway",       group:"I", pos:2, pts:6,  status:"confirmed",  prob:null, note:"Runner-up confirmed" },
   { name:"Senegal",      group:"I", pos:3, pts:0,  status:"bubble",     prob:20,   note:"3rd place long shot · vs Iraq" },
   { name:"Iraq",         group:"I", pos:4, pts:0,  status:"likely_out", prob:8,    note:"Playing Senegal Jun 26" },
-  // GROUP J
   { name:"Argentina",    group:"J", pos:1, pts:6,  status:"confirmed",  prob:null, note:"Group winner" },
   { name:"Austria",      group:"J", pos:2, pts:6,  status:"confirmed",  prob:null, note:"Runner-up confirmed" },
   { name:"Algeria",      group:"J", pos:3, pts:3,  status:"bubble",     prob:86,   note:"3rd place contender · vs Austria" },
   { name:"Jordan",       group:"J", pos:4, pts:1,  status:"eliminated", prob:0,    note:"Confirmed out" },
-  // GROUP K
   { name:"Colombia",     group:"K", pos:1, pts:6,  status:"confirmed",  prob:null, note:"Group winner" },
   { name:"Portugal",     group:"K", pos:2, pts:4,  status:"likely_in",  prob:98,   note:"Virtual lock · vs Colombia" },
   { name:"DR Congo",     group:"K", pos:3, pts:1,  status:"likely_out", prob:14,   note:"Need win + help" },
   { name:"Uzbekistan",   group:"K", pos:4, pts:1,  status:"likely_out", prob:9,    note:"Need win + help" },
-  // GROUP L
   { name:"England",      group:"L", pos:1, pts:4,  status:"likely_in",  prob:99,   note:"Playing Panama Jun 27" },
   { name:"Ghana",        group:"L", pos:2, pts:4,  status:"likely_in",  prob:75,   note:"Playing Croatia Jun 28" },
   { name:"Croatia",      group:"L", pos:3, pts:3,  status:"bubble",     prob:29,   note:"3rd place contender · vs Ghana" },
@@ -71,6 +58,34 @@ const STATUS_CONFIG = {
   likely_out: { label:"Likely out",        short:"At risk",   bg:"#fee2e2", text:"#991b1b", border:"#fca5a5", dot:"#dc2626" },
   eliminated: { label:"Confirmed out",     short:"Out",       bg:"#f1f5f9", text:"#64748b", border:"#cbd5e1", dot:"#94a3b8" },
 };
+
+// All remaining group stage matches — stored as UTC timestamps
+// Format: { home, away, group, utc }
+// Jun 25 4PM ET = 20:00 UTC; 7PM ET = 23:00 UTC; 10PM ET = 02:00 UTC Jun 26
+const SCHEDULE = [
+  // Jun 25 (today)
+  { home:"Ecuador",     away:"Germany",      group:"E", utc:"2026-06-25T20:00:00Z", venue:"MetLife Stadium, NJ",       status:"live"     },
+  { home:"Curaçao",     away:"Ivory Coast",  group:"E", utc:"2026-06-25T20:00:00Z", venue:"Lincoln Financial, PA",      status:"live"     },
+  { home:"Japan",       away:"Sweden",       group:"F", utc:"2026-06-25T23:00:00Z", venue:"AT&T Stadium, Dallas",       status:"upcoming" },
+  { home:"Tunisia",     away:"Netherlands",  group:"F", utc:"2026-06-25T23:00:00Z", venue:"Arrowhead Stadium, KC",      status:"upcoming" },
+  { home:"Turkey",      away:"USA",          group:"D", utc:"2026-06-26T02:00:00Z", venue:"SoFi Stadium, LA",           status:"upcoming" },
+  { home:"Paraguay",    away:"Australia",    group:"D", utc:"2026-06-26T02:00:00Z", venue:"Levi's Stadium, SF",         status:"upcoming" },
+  // Jun 26
+  { home:"Norway",      away:"France",       group:"I", utc:"2026-06-26T19:00:00Z", venue:"Gillette Stadium, Boston",   status:"upcoming" },
+  { home:"Senegal",     away:"Iraq",         group:"I", utc:"2026-06-26T19:00:00Z", venue:"BMO Field, Toronto",         status:"upcoming" },
+  { home:"Egypt",       away:"Iran",         group:"G", utc:"2026-06-27T03:00:00Z", venue:"Lumen Field, Seattle",       status:"upcoming" },
+  { home:"New Zealand", away:"Belgium",      group:"G", utc:"2026-06-27T03:00:00Z", venue:"BC Place, Vancouver",        status:"upcoming" },
+  { home:"Cape Verde",  away:"Saudi Arabia", group:"H", utc:"2026-06-27T00:00:00Z", venue:"NRG Stadium, Houston",       status:"upcoming" },
+  // Jun 27
+  { home:"Uruguay",     away:"Spain",        group:"H", utc:"2026-06-28T00:00:00Z", venue:"Estadio Akron, Guadalajara", status:"upcoming" },
+  { home:"Panama",      away:"England",      group:"L", utc:"2026-06-28T02:00:00Z", venue:"MetLife Stadium, NJ",        status:"upcoming" },
+  { home:"Croatia",     away:"Ghana",        group:"L", utc:"2026-06-28T02:00:00Z", venue:"Lincoln Financial, PA",      status:"upcoming" },
+  { home:"Algeria",     away:"Austria",      group:"J", utc:"2026-06-28T02:00:00Z", venue:"Arrowhead Stadium, KC",      status:"upcoming" },
+  { home:"Jordan",      away:"Argentina",    group:"J", utc:"2026-06-28T02:00:00Z", venue:"AT&T Stadium, Dallas",       status:"upcoming" },
+  // Jun 28
+  { home:"Colombia",    away:"Portugal",     group:"K", utc:"2026-06-29T02:00:00Z", venue:"Hard Rock Stadium, Miami",   status:"upcoming" },
+  { home:"Uzbekistan",  away:"DR Congo",     group:"K", utc:"2026-06-29T02:00:00Z", venue:"Mercedes-Benz, Atlanta",     status:"upcoming" },
+];
 
 const THIRD_TEAMS = [
   { team:"Bosnia",      group:"B", pts:4, gf:5, ga:6, done:true,  result:"W 3–1 vs Qatar" },
@@ -89,7 +104,7 @@ const THIRD_TEAMS = [
 
 const ptsDelta = { Win:3, Draw:1, Loss:0 };
 const gdDelta  = { Win:1, Draw:0, Loss:-2 };
-const TABS = ["All 48 teams", "3rd place race"];
+const TABS = ["All 48 teams", "3rd place race", "Schedule"];
 
 function probColor(prob) {
   if (prob >= 80) return { color:"#166534", bg:"#dcfce7" };
@@ -98,9 +113,34 @@ function probColor(prob) {
   return { color:"#991b1b", bg:"#fee2e2" };
 }
 
+function formatLocalDateTime(utcStr) {
+  const d = new Date(utcStr);
+  return d.toLocaleString(undefined, {
+    weekday:"short", month:"short", day:"numeric",
+    hour:"numeric", minute:"2-digit", timeZoneName:"short"
+  });
+}
+
+function formatLocalDate(utcStr) {
+  const d = new Date(utcStr);
+  return d.toLocaleDateString(undefined, { weekday:"long", month:"long", day:"numeric" });
+}
+
+function groupMatchesByDate(matches) {
+  const groups = {};
+  matches.forEach(m => {
+    const d = new Date(m.utc);
+    const key = d.toLocaleDateString(undefined, { weekday:"long", month:"long", day:"numeric" });
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(m);
+  });
+  return groups;
+}
+
 export default function App() {
   const [tab, setTab] = useState(0);
   const [filter, setFilter] = useState("all");
+  const [now, setNow] = useState(new Date());
   const [selections, setSelections] = useState(() => {
     const init = {};
     THIRD_TEAMS.forEach(t => {
@@ -112,6 +152,12 @@ export default function App() {
     return init;
   });
   const [showOdds, setShowOdds] = useState(true);
+
+  // Live clock — updates every second
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const pick = (team, outcome) => setSelections(prev => ({ ...prev, [team]: outcome }));
 
@@ -125,9 +171,6 @@ export default function App() {
     .sort((a, b) => b.finalPts - a.finalPts || b.finalGD - a.finalGD)
     .map((t, i) => ({ ...t, rank: i + 1 }));
   }, [selections]);
-
-  const scot = computed.find(t => t.team === "Scotland");
-  const scotIn = scot?.rank <= 8;
 
   const groupedTeams = useMemo(() => {
     const filtered = filter === "all" ? ALL_TEAMS : ALL_TEAMS.filter(t => t.status === filter);
@@ -144,6 +187,8 @@ export default function App() {
     Object.keys(STATUS_CONFIG).forEach(s => { c[s] = ALL_TEAMS.filter(t => t.status === s).length; });
     return c;
   }, []);
+
+  const scheduleByDate = useMemo(() => groupMatchesByDate(SCHEDULE), []);
 
   const btnStyle = (team, outcome) => {
     const active = selections[team] === outcome;
@@ -163,12 +208,18 @@ export default function App() {
     };
   };
 
+  // Format live clock
+  const timeStr = now.toLocaleTimeString(undefined, { hour:"numeric", minute:"2-digit", second:"2-digit" });
+  const dateStr = now.toLocaleDateString(undefined, { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+  const tzStr   = now.toLocaleTimeString(undefined, { timeZoneName:"short" }).split(" ").pop();
+
   return (
     <div style={{
       background:"#f8fafc", minHeight:"100vh",
       fontFamily:"'Inter','Segoe UI',sans-serif", color:"#1e293b",
       maxWidth:"75vw", margin:"0 auto",
     }}>
+
       {/* Header */}
       <div style={{
         padding:"14px 24px", borderBottom:"1px solid #e2e8f0", background:"#fff",
@@ -177,26 +228,18 @@ export default function App() {
       }}>
         <div>
           <div style={{ fontSize:"10px", letterSpacing:"2px", textTransform:"uppercase", color:"#94a3b8", marginBottom:"2px" }}>
-            2026 FIFA World Cup · Updated Jun 25
+            2026 FIFA World Cup · Group Stage
           </div>
           <div style={{ fontSize:"20px", fontWeight:"700", color:"#0f172a" }}>Knockout Stage Tracker</div>
         </div>
-        <div style={{ fontSize:"10px", color:"#92400e", background:"#fef9c3", border:"1px solid #fde047", borderRadius:"6px", padding:"4px 10px" }}>
-          ⚠️ Ecuador vs Germany & Curaçao vs Ivory Coast still live (4PM ET)
-        </div>
-        <div style={{
-          marginLeft:"auto", background: scotIn ? "#dcfce7" : "#fee2e2",
-          border:`1px solid ${scotIn ? "#86efac" : "#fca5a5"}`,
-          borderRadius:"8px", padding:"6px 14px",
-          display:"flex", alignItems:"center", gap:"8px",
-        }}>
-          <span style={{ fontSize:"16px" }}>🏴󠁧󠁢󠁳󠁣󠁴󠁿</span>
-          <div>
-            <div style={{ fontSize:"12px", fontWeight:"700", color:"#1e293b" }}>Scotland · Rank #{scot?.rank}</div>
-            <div style={{ fontSize:"10px", color:"#64748b" }}>3 pts · GD –3 · 83% adv. prob.</div>
+
+        {/* Live clock */}
+        <div style={{ marginLeft:"auto", textAlign:"right" }}>
+          <div style={{ fontSize:"22px", fontWeight:"700", color:"#0f172a", letterSpacing:"-0.5px", fontVariantNumeric:"tabular-nums" }}>
+            {timeStr}
           </div>
-          <div style={{ fontSize:"15px", fontWeight:"800", color: scotIn ? "#166534" : "#991b1b", marginLeft:"6px" }}>
-            {scotIn ? "✓ In" : "✗ Out"}
+          <div style={{ fontSize:"11px", color:"#64748b" }}>
+            {dateStr} · {tzStr}
           </div>
         </div>
       </div>
@@ -214,7 +257,7 @@ export default function App() {
         ))}
       </div>
 
-      {/* TAB 0 */}
+      {/* TAB 0: All 48 teams */}
       {tab === 0 && (
         <div style={{ padding:"18px 24px" }}>
           <div style={{ display:"flex", gap:"6px", flexWrap:"wrap", marginBottom:"18px" }}>
@@ -267,18 +310,15 @@ export default function App() {
                         <div style={{ fontSize:"9px", color:"#94a3b8" }}>{t.note}</div>
                       </div>
                       <span style={{ fontSize:"12px", fontWeight:"700", color:"#475569", width:"22px", textAlign:"center" }}>{t.pts}</span>
-                      {/* Prob badge for non-certain teams */}
                       {showProb ? (
                         <span style={{
                           fontSize:"10px", fontWeight:"700", padding:"2px 7px", borderRadius:"10px",
-                          background: pc.bg, color: pc.color,
-                          whiteSpace:"nowrap", minWidth:"42px", textAlign:"center",
+                          background:pc.bg, color:pc.color, whiteSpace:"nowrap", minWidth:"42px", textAlign:"center",
                         }}>{t.prob}%</span>
                       ) : (
                         <span style={{
                           fontSize:"9px", fontWeight:"600", padding:"2px 7px", borderRadius:"10px",
-                          background:cfg.bg, color:cfg.text, border:`1px solid ${cfg.border}`,
-                          whiteSpace:"nowrap",
+                          background:cfg.bg, color:cfg.text, border:`1px solid ${cfg.border}`, whiteSpace:"nowrap",
                         }}>{cfg.short}</span>
                       )}
                     </div>
@@ -287,24 +327,19 @@ export default function App() {
               </div>
             ))}
           </div>
-
           <div style={{ marginTop:"14px", fontSize:"10px", color:"#94a3b8", display:"flex", gap:"16px", flexWrap:"wrap" }}>
-            <span>% = advancement probability from FOX Sports odds (Jun 24)</span>
+            <span>% = advancement probability · FOX Sports odds Jun 24</span>
             <span>Groups A, B, C complete · D, E, F playing today · G–L play Jun 26–28</span>
           </div>
         </div>
       )}
 
-      {/* TAB 1 */}
+      {/* TAB 1: 3rd place race */}
       {tab === 1 && (
         <div style={{ padding:"18px 24px" }}>
-          <div style={{
-            background:"#fef9c3", border:"1px solid #fde047", borderRadius:"8px",
-            padding:"10px 14px", marginBottom:"14px", fontSize:"12px", color:"#854d0e",
-          }}>
+          <div style={{ background:"#fef9c3", border:"1px solid #fde047", borderRadius:"8px", padding:"10px 14px", marginBottom:"14px", fontSize:"12px", color:"#854d0e" }}>
             🚨 <strong>Key update Jun 25:</strong> Mexico won Group A (9 pts, GD +5). South Africa upset S.Korea 1–0. Czechia eliminated.
           </div>
-
           <div style={{ display:"flex", alignItems:"center", gap:"12px", marginBottom:"14px" }}>
             <label style={{ fontSize:"12px", color:"#64748b", display:"flex", alignItems:"center", gap:"6px", cursor:"pointer" }}>
               <input type="checkbox" checked={showOdds} onChange={e => setShowOdds(e.target.checked)} />
@@ -317,12 +352,8 @@ export default function App() {
             <table style={{ width:"100%", borderCollapse:"collapse", fontSize:"12px" }}>
               <thead>
                 <tr style={{ background:"#f8fafc", borderBottom:"1px solid #e2e8f0" }}>
-                  {["#","Team","Pts","GD", ...(showOdds ? ["W / D / L"] : []), showOdds ? "Final game" : "W/D/L · Final game"].map((h, i) => (
-                    <th key={i} style={{
-                      padding:"8px 10px", textAlign: i <= 3 ? "center" : "left",
-                      fontSize:"10px", fontWeight:"600", color:"#94a3b8",
-                      textTransform:"uppercase", letterSpacing:"0.8px",
-                    }}>{h}</th>
+                  {["#","Team","Pts","GD",...(showOdds?["W / D / L"]:[]),showOdds?"Final game":"W/D/L · Final game"].map((h,i)=>(
+                    <th key={i} style={{ padding:"8px 10px", textAlign:i<=3?"center":"left", fontSize:"10px", fontWeight:"600", color:"#94a3b8", textTransform:"uppercase", letterSpacing:"0.8px" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -337,42 +368,35 @@ export default function App() {
                         <tr key="cutline">
                           <td colSpan={showOdds ? 6 : 5} style={{ padding:"0" }}>
                             <div style={{ height:"2px", background:"#ef4444", position:"relative" }}>
-                              <span style={{
-                                position:"absolute", left:"50%", transform:"translateX(-50%) translateY(-50%)",
-                                background:"#ef4444", color:"#fff", fontSize:"9px", fontWeight:"700",
-                                padding:"2px 10px", borderRadius:"10px",
-                                letterSpacing:"1px", textTransform:"uppercase", whiteSpace:"nowrap",
-                              }}>— elimination line —</span>
+                              <span style={{ position:"absolute", left:"50%", transform:"translateX(-50%) translateY(-50%)", background:"#ef4444", color:"#fff", fontSize:"9px", fontWeight:"700", padding:"2px 10px", borderRadius:"10px", letterSpacing:"1px", textTransform:"uppercase", whiteSpace:"nowrap" }}>— elimination line —</span>
                             </div>
                           </td>
                         </tr>
                       )}
                       <tr key={t.team} style={{
-                        background: isScot ? "#eff6ff" : i % 2 === 0 ? "#fff" : "#f8fafc",
-                        borderLeft:`3px solid ${passing ? (isScot ? "#3b82f6" : "#86efac") : "#fca5a5"}`,
+                        background: isScot ? "#eff6ff" : i%2===0?"#fff":"#f8fafc",
+                        borderLeft:`3px solid ${passing?(isScot?"#3b82f6":"#86efac"):"#fca5a5"}`,
                         borderBottom:"1px solid #f1f5f9",
                       }}>
                         <td style={{ padding:"9px 10px", textAlign:"center" }}>
-                          <span style={{ fontSize:"15px", fontWeight:"800", color: passing ? "#16a34a" : "#dc2626" }}>{t.rank}</span>
+                          <span style={{ fontSize:"15px", fontWeight:"800", color:passing?"#16a34a":"#dc2626" }}>{t.rank}</span>
                         </td>
                         <td style={{ padding:"9px 10px" }}>
-                          <div style={{ fontWeight:"600", color: isScot ? "#1d4ed8" : "#1e293b" }}>
-                            {isScot && "🏴󠁧󠁢󠁳󠁣󠁴󠁿 "}{t.team}
-                          </div>
+                          <div style={{ fontWeight:"600", color:isScot?"#1d4ed8":"#1e293b" }}>{isScot&&"🏴󠁧󠁢󠁳󠁣󠁴󠁿 "}{t.team}</div>
                           <div style={{ fontSize:"10px", color:"#94a3b8" }}>Group {t.group}</div>
                         </td>
                         <td style={{ padding:"9px 6px", textAlign:"center" }}>
-                          <span style={{ fontWeight:"800", fontSize:"14px", color: t.finalPts>=4?"#16a34a":t.finalPts===3?"#ca8a04":"#dc2626" }}>{t.finalPts}</span>
+                          <span style={{ fontWeight:"800", fontSize:"14px", color:t.finalPts>=4?"#16a34a":t.finalPts===3?"#ca8a04":"#dc2626" }}>{t.finalPts}</span>
                         </td>
                         <td style={{ padding:"9px 6px", textAlign:"center" }}>
-                          <span style={{ fontWeight:"600", fontSize:"13px", color: t.finalGD>0?"#16a34a":t.finalGD===0?"#64748b":"#dc2626" }}>{gdStr}</span>
+                          <span style={{ fontWeight:"600", fontSize:"13px", color:t.finalGD>0?"#16a34a":t.finalGD===0?"#64748b":"#dc2626" }}>{gdStr}</span>
                         </td>
                         {showOdds && (
                           <td style={{ padding:"9px 10px", textAlign:"center" }}>
                             {t.done ? <span style={{ fontSize:"10px", color:"#94a3b8", fontStyle:"italic" }}>done</span> : (
                               <div style={{ display:"flex", gap:"3px", justifyContent:"center" }}>
-                                {["Win","Draw","Loss"].map(s => (
-                                  <button key={s} onClick={() => pick(t.team, s)} style={btnStyle(t.team, s)}>
+                                {["Win","Draw","Loss"].map(s=>(
+                                  <button key={s} onClick={()=>pick(t.team,s)} style={btnStyle(t.team,s)}>
                                     {s[0]}<span style={{ fontSize:"8px" }}>{Math.round(s==="Win"?t.w:s==="Draw"?t.d:t.l)}%</span>
                                   </button>
                                 ))}
@@ -388,8 +412,8 @@ export default function App() {
                               <div style={{ fontSize:"11px", color:"#475569" }}>vs {t.opp} · {t.date}</div>
                               {!showOdds && (
                                 <div style={{ display:"flex", gap:"3px", marginTop:"4px" }}>
-                                  {["Win","Draw","Loss"].map(s => (
-                                    <button key={s} onClick={() => pick(t.team, s)} style={btnStyle(t.team, s)}>
+                                  {["Win","Draw","Loss"].map(s=>(
+                                    <button key={s} onClick={()=>pick(t.team,s)} style={btnStyle(t.team,s)}>
                                       {s[0]}<span style={{ fontSize:"8px" }}>{Math.round(s==="Win"?t.w:s==="Draw"?t.d:t.l)}%</span>
                                     </button>
                                   ))}
@@ -405,11 +429,79 @@ export default function App() {
               </tbody>
             </table>
           </div>
-
           <div style={{ marginTop:"10px", fontSize:"10px", color:"#94a3b8", display:"flex", flexWrap:"wrap", gap:"14px" }}>
             <span>GD: W≈+1 · D=0 · L≈–2 (estimated)</span>
-            <span>Defaults = most likely outcome per odds</span>
             <span>Updated: Jun 25 post Groups A/B/C</span>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: Schedule */}
+      {tab === 2 && (
+        <div style={{ padding:"18px 24px" }}>
+          <div style={{ fontSize:"12px", color:"#64748b", marginBottom:"16px" }}>
+            All times shown in your local timezone · {tzStr}
+          </div>
+
+          {Object.entries(scheduleByDate).map(([dateLabel, matches]) => (
+            <div key={dateLabel} style={{ marginBottom:"24px" }}>
+              {/* Date header */}
+              <div style={{
+                fontSize:"12px", fontWeight:"700", color:"#475569",
+                textTransform:"uppercase", letterSpacing:"1px",
+                borderBottom:"2px solid #e2e8f0", paddingBottom:"6px", marginBottom:"10px",
+              }}>
+                {dateLabel}
+              </div>
+
+              <div style={{ display:"flex", flexDirection:"column", gap:"8px" }}>
+                {matches.map((m, i) => {
+                  const kickoff = new Date(m.utc);
+                  const isPast = now > kickoff;
+                  const isLive = m.status === "live";
+                  const timeLocal = kickoff.toLocaleTimeString(undefined, { hour:"numeric", minute:"2-digit" });
+                  return (
+                    <div key={i} style={{
+                      background:"#fff", borderRadius:"10px", border:"1px solid #e2e8f0",
+                      padding:"12px 16px", display:"flex", alignItems:"center", gap:"12px",
+                      boxShadow:"0 1px 3px rgba(0,0,0,0.04)",
+                      borderLeft:`3px solid ${isLive?"#f59e0b":isPast?"#cbd5e1":"#3b82f6"}`,
+                      opacity: isPast && !isLive ? 0.6 : 1,
+                    }}>
+                      {/* Status dot */}
+                      <div style={{ textAlign:"center", minWidth:"52px" }}>
+                        {isLive ? (
+                          <span style={{ fontSize:"10px", fontWeight:"700", color:"#b45309", background:"#fef9c3", padding:"2px 6px", borderRadius:"10px" }}>🔴 LIVE</span>
+                        ) : isPast ? (
+                          <span style={{ fontSize:"10px", color:"#94a3b8" }}>FT</span>
+                        ) : (
+                          <span style={{ fontSize:"12px", fontWeight:"600", color:"#2563eb" }}>{timeLocal}</span>
+                        )}
+                      </div>
+
+                      {/* Match */}
+                      <div style={{ flex:1, display:"flex", alignItems:"center", gap:"8px" }}>
+                        <span style={{ fontSize:"13px", fontWeight:"600", color:"#1e293b", textAlign:"right", flex:1 }}>{m.home}</span>
+                        <span style={{ fontSize:"11px", color:"#94a3b8", fontWeight:"500", flexShrink:0 }}>vs</span>
+                        <span style={{ fontSize:"13px", fontWeight:"600", color:"#1e293b", flex:1 }}>{m.away}</span>
+                      </div>
+
+                      {/* Group + venue */}
+                      <div style={{ textAlign:"right", minWidth:"160px" }}>
+                        <div style={{ fontSize:"10px", fontWeight:"700", color:"#2563eb", background:"#eff6ff", padding:"1px 6px", borderRadius:"6px", display:"inline-block", marginBottom:"2px" }}>
+                          Group {m.group}
+                        </div>
+                        <div style={{ fontSize:"10px", color:"#94a3b8" }}>{m.venue}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+
+          <div style={{ fontSize:"10px", color:"#94a3b8", marginTop:"8px" }}>
+            Remaining group stage matches · Knockout round begins Jun 28
           </div>
         </div>
       )}
