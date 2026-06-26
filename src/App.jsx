@@ -24,7 +24,6 @@ const CONFIRMED = [
 
 const ELIMINATED = [
   { name:"Haiti",      group:"C" },
-  { name:"Turkey",     group:"D" },
   { name:"Curaçao",    group:"E" },
   { name:"Tunisia",    group:"F" },
   { name:"Jordan",     group:"J" },
@@ -53,7 +52,7 @@ const ALL_TEAMS = [
   { name:"USA",          group:"D", pos:1, pts:6, status:"confirmed",  prob:null, note:"Group winner" },
   { name:"Australia",    group:"D", pos:2, pts:4, status:"likely_in",  prob:93,   note:"🔴 LIVE vs Paraguay" },
   { name:"Paraguay",     group:"D", pos:3, pts:3, status:"bubble",     prob:89,   note:"🔴 LIVE vs Australia" },
-  { name:"Turkey",       group:"D", pos:4, pts:0, status:"eliminated", prob:0,    note:"Confirmed out" },
+  { name:"Turkey",       group:"D", pos:4, pts:0, status:"bubble",     prob:15,   note:"Win today could reach 3pts · 3rd place long shot" },
   // GROUP E — complete
   { name:"Ivory Coast",  group:"E", pos:1, pts:7, status:"confirmed",  prob:null, note:"Group winner · W 2–0 vs Curaçao" },
   { name:"Germany",      group:"E", pos:2, pts:6, status:"confirmed",  prob:null, note:"Runner-up · L 1–2 vs Ecuador (shock)" },
@@ -113,6 +112,7 @@ const THIRD_TEAMS = [
   { team:"Croatia",     group:"L", pts:3, gf:3, ga:4, done:false, opp:"Ghana",         date:"Sat", w:27.7, d:30.3, l:42.1 },
   { team:"Algeria",     group:"J", pts:3, gf:2, ga:4, done:false, opp:"Austria",       date:"Sat", w:44.2, d:26.8, l:29.0 },
   { team:"Paraguay",    group:"D", pts:3, gf:2, ga:4, done:false, opp:"Australia",     date:"Thu", w:24.1, d:30.1, l:45.8 },
+  { team:"Turkey",      group:"D", pts:0, gf:0, ga:2, done:false, opp:"USA",           date:"Thu", w:18.0, d:22.0, l:60.0 },
   { team:"Cape Verde",  group:"H", pts:2, gf:2, ga:2, done:false, opp:"Saudi Arabia",  date:"Fri", w:31.0, d:29.2, l:39.7 },
   { team:"Belgium",     group:"G", pts:2, gf:1, ga:1, done:false, opp:"New Zealand",   date:"Fri", w:70.0, d:17.8, l:12.2 },
   { team:"DR Congo",    group:"K", pts:1, gf:1, ga:2, done:false, opp:"Uzbekistan",    date:"Sat", w:32.2, d:29.2, l:38.6 },
