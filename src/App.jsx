@@ -32,7 +32,10 @@ const CONFIRMED = [
   { name:"Netherlands",  group:"F", pos:"Winner"    },
   { name:"Japan",        group:"F", pos:"Runner-up" },
   { name:"Sweden",       group:"F", pos:"3rd place" },
+  { name:"Belgium",      group:"G", pos:"Winner"    },
+  { name:"Egypt",        group:"G", pos:"Runner-up" },
   { name:"Spain",        group:"H", pos:"Winner"    },
+  { name:"Cape Verde",   group:"H", pos:"Runner-up" },
   { name:"France",       group:"I", pos:"Winner"    },
   { name:"Norway",       group:"I", pos:"Runner-up" },
   { name:"Argentina",    group:"J", pos:"Winner"    },
@@ -49,6 +52,11 @@ const ELIMINATED = [
   { name:"Panama",     group:"L" },
   { name:"Qatar",      group:"B" },
   { name:"Czechia",    group:"A" },
+  { name:"Iraq",       group:"I" },
+  { name:"Uruguay",    group:"H" },
+  { name:"Saudi Arabia",group:"H" },
+  { name:"New Zealand", group:"G" },
+  { name:"Iran",        group:"G" },
 ];
 
 const ALL_TEAMS = [
@@ -62,7 +70,7 @@ const ALL_TEAMS = [
   { name:"Qatar",        group:"B", pos:4, pts:1, status:"eliminated", prob:0,    note:"Confirmed out" },
   { name:"Brazil",       group:"C", pos:1, pts:7, status:"confirmed",  prob:null, note:"Group winner" },
   { name:"Morocco",      group:"C", pos:2, pts:7, status:"confirmed",  prob:null, note:"Runner-up confirmed" },
-  { name:"Scotland",     group:"C", pos:3, pts:3, status:"bubble",     prob:83,   note:"L 0–3 Brazil · GD –3 · needs help" },
+  { name:"Scotland",     group:"C", pos:3, pts:3, status:"eliminated", prob:0,    note:"L 0–3 Brazil · GD –3 · eliminated — Tartan Army going home 🏴󠁧󠁢󠁳󠁣󠁴󠁿" },
   { name:"Haiti",        group:"C", pos:4, pts:0, status:"eliminated", prob:0,    note:"Confirmed out" },
   { name:"USA",          group:"D", pos:1, pts:6, status:"confirmed",  prob:null, note:"Group winner · L 2–3 vs Turkey (already qualified)" },
   { name:"Australia",    group:"D", pos:2, pts:5, status:"confirmed",  prob:null, note:"Runner-up · D 0–0 vs Paraguay" },
@@ -76,18 +84,18 @@ const ALL_TEAMS = [
   { name:"Japan",        group:"F", pos:2, pts:5, status:"confirmed",  prob:null, note:"Runner-up · D 1–1 vs Sweden" },
   { name:"Sweden",       group:"F", pos:3, pts:4, status:"confirmed",  prob:null, note:"D 1–1 vs Japan · confirmed 3rd" },
   { name:"Tunisia",      group:"F", pos:4, pts:0, status:"eliminated", prob:0,    note:"L 1–3 vs Netherlands" },
-  { name:"Egypt",        group:"G", pos:1, pts:4, status:"likely_in",  prob:78,   note:"Playing Iran Jun 26" },
-  { name:"Iran",         group:"G", pos:2, pts:2, status:"bubble",     prob:33,   note:"Playing Egypt Jun 26" },
-  { name:"Belgium",      group:"G", pos:3, pts:2, status:"bubble",     prob:96,   note:"3rd place contender · vs NZ Jun 27" },
-  { name:"New Zealand",  group:"G", pos:4, pts:1, status:"likely_out", prob:11,   note:"Playing Belgium Jun 27" },
-  { name:"Spain",        group:"H", pos:1, pts:7, status:"confirmed",  prob:null, note:"Confirmed through" },
-  { name:"Uruguay",      group:"H", pos:2, pts:3, status:"bubble",     prob:44,   note:"Playing Spain Jun 27" },
-  { name:"Cape Verde",   group:"H", pos:3, pts:2, status:"bubble",     prob:40,   note:"3rd place contender · vs S.Arabia" },
-  { name:"Saudi Arabia", group:"H", pos:4, pts:1, status:"likely_out", prob:10,   note:"Playing Cape Verde Jun 26" },
-  { name:"France",       group:"I", pos:1, pts:6, status:"confirmed",  prob:null, note:"Group winner" },
-  { name:"Norway",       group:"I", pos:2, pts:6, status:"confirmed",  prob:null, note:"Runner-up confirmed" },
-  { name:"Senegal",      group:"I", pos:3, pts:0, status:"bubble",     prob:20,   note:"3rd place long shot · vs Iraq Jun 26" },
-  { name:"Iraq",         group:"I", pos:4, pts:0, status:"likely_out", prob:8,    note:"Playing Senegal Jun 26" },
+  { name:"Belgium",      group:"G", pos:1, pts:5,  status:"confirmed",  prob:null, note:"Group winner · W 5–1 vs New Zealand · Lukaku finally scores!" },
+  { name:"Egypt",        group:"G", pos:2, pts:5,  status:"confirmed",  prob:null, note:"Runner-up · D 1–1 vs Iran · confirmed through" },
+  { name:"Iran",         group:"G", pos:3, pts:3,  status:"eliminated", prob:0,    note:"D 1–1 vs Egypt · VAR ruled out 90+min winner · heartbreak 💔" },
+  { name:"New Zealand",  group:"G", pos:4, pts:1,  status:"eliminated", prob:0,    note:"L 1–5 vs Belgium · eliminated" },
+  { name:"Spain",        group:"H", pos:1, pts:10, status:"confirmed",  prob:null, note:"Group winner · W 1–0 vs Uruguay" },
+  { name:"Cape Verde",   group:"H", pos:2, pts:5,  status:"confirmed",  prob:null, note:"Runner-up · D 0–0 vs Saudi Arabia · confirmed through!" },
+  { name:"Uruguay",      group:"H", pos:3, pts:3,  status:"eliminated", prob:0,    note:"L 0–1 vs Spain · eliminated" },
+  { name:"Saudi Arabia", group:"H", pos:4, pts:2,  status:"eliminated", prob:0,    note:"D 0–0 vs Cape Verde · eliminated" },
+  { name:"France",       group:"I", pos:1, pts:9, status:"confirmed",  prob:null, note:"Group winner · W 4–1 vs Norway" },
+  { name:"Norway",       group:"I", pos:2, pts:6, status:"confirmed",  prob:null, note:"Runner-up · L 1–4 vs France" },
+  { name:"Senegal",      group:"I", pos:3, pts:3, status:"bubble",     prob:55,   note:"W 5–0 vs Iraq 🚨 · 3rd place contender" },
+  { name:"Iraq",         group:"I", pos:4, pts:0, status:"eliminated", prob:0,    note:"L 0–5 vs Senegal · eliminated" },
   { name:"Argentina",    group:"J", pos:1, pts:6, status:"confirmed",  prob:null, note:"Group winner" },
   { name:"Austria",      group:"J", pos:2, pts:6, status:"confirmed",  prob:null, note:"Runner-up confirmed" },
   { name:"Algeria",      group:"J", pos:3, pts:3, status:"bubble",     prob:86,   note:"3rd place contender · vs Austria" },
@@ -115,14 +123,14 @@ const THIRD_TEAMS = [
   { team:"Sweden",      group:"F", pts:4, gf:7, ga:7, done:true,  result:"D 1–1 vs Japan · confirmed" },
   { team:"Ecuador",     group:"E", pts:4, gf:2, ga:2, done:true,  result:"🚨 W 2–1 vs Germany" },
   { team:"Paraguay",    group:"D", pts:4, gf:2, ga:4, done:true,  result:"D 0–0 vs Australia" },
-  { team:"Scotland",    group:"C", pts:3, gf:1, ga:4, done:true,  result:"L 0–3 vs Brazil" },
+  { team:"Scotland",    group:"C", pts:3, gf:1, ga:4, done:true,  result:"L 0–3 vs Brazil · ELIMINATED 🏴󠁧󠁢󠁳󠁣󠁴󠁿" },
   { team:"South Africa",group:"A", pts:3, gf:1, ga:2, done:true,  result:"W 1–0 vs S.Korea" },
   { team:"Croatia",     group:"L", pts:3, gf:3, ga:4, done:false, opp:"Ghana",         date:"Sat Jun 28", w:27.7, d:30.3, l:42.1 },
   { team:"Algeria",     group:"J", pts:3, gf:2, ga:4, done:false, opp:"Austria",       date:"Sat Jun 28", w:44.2, d:26.8, l:29.0 },
-  { team:"Cape Verde",  group:"H", pts:2, gf:2, ga:2, done:false, opp:"Saudi Arabia",  date:"Fri Jun 27", w:31.0, d:29.2, l:39.7 },
-  { team:"Belgium",     group:"G", pts:2, gf:1, ga:1, done:false, opp:"New Zealand",   date:"Sat Jun 27", w:70.0, d:17.8, l:12.2 },
+  { team:"Cape Verde",  group:"H", pts:5, gf:2, ga:2, done:true,  result:"D 0–0 vs Saudi Arabia · confirmed through!" },
+  { team:"Belgium",     group:"G", pts:5, gf:6, ga:2, done:true,  result:"W 5–1 vs New Zealand" },
   { team:"DR Congo",    group:"K", pts:1, gf:1, ga:2, done:false, opp:"Uzbekistan",    date:"Sun Jun 29", w:32.2, d:29.2, l:38.6 },
-  { team:"Senegal",     group:"I", pts:0, gf:3, ga:6, done:false, opp:"Iraq",          date:"Fri Jun 27", w:26.8, d:28.5, l:44.7 },
+  { team:"Senegal",     group:"I", pts:3, gf:8, ga:6, done:true,  result:"W 5–0 vs Iraq 🚨" },
 ];
 
 // Only UPCOMING group stage matches + confirmed knockout fixtures
@@ -130,14 +138,8 @@ const THIRD_TEAMS = [
 const SCHEDULE = [
   // ── REMAINING GROUP STAGE (all UTC, converted to local in UI) ─────────────
   // Jun 26 ET = Jun 27 PHT
-  { stage:"Group", home:"Norway",      away:"France",        group:"I", utc:"2026-06-26T19:00:00Z", venue:"Gillette Stadium, Boston",    durationMins:105 },
-  { stage:"Group", home:"Senegal",     away:"Iraq",          group:"I", utc:"2026-06-26T19:00:00Z", venue:"BMO Field, Toronto",           durationMins:105 },
-  { stage:"Group", home:"Cape Verde",  away:"Saudi Arabia",  group:"H", utc:"2026-06-27T00:00:00Z", venue:"NRG Stadium, Houston",         durationMins:105 },
-  // Jun 26 late ET = Jun 27 PHT
-  { stage:"Group", home:"Egypt",       away:"Iran",          group:"G", utc:"2026-06-27T03:00:00Z", venue:"Lumen Field, Seattle",         durationMins:105 },
-  { stage:"Group", home:"New Zealand", away:"Belgium",       group:"G", utc:"2026-06-27T03:00:00Z", venue:"BC Place, Vancouver",          durationMins:105 },
-  // Jun 27 ET = Jun 28 PHT
-  { stage:"Group", home:"Uruguay",     away:"Spain",         group:"H", utc:"2026-06-28T00:00:00Z", venue:"Estadio Akron, Guadalajara",   durationMins:105 },
+
+
   { stage:"Group", home:"Panama",      away:"England",       group:"L", utc:"2026-06-28T02:00:00Z", venue:"MetLife Stadium, NJ",          durationMins:105 },
   { stage:"Group", home:"Croatia",     away:"Ghana",         group:"L", utc:"2026-06-28T02:00:00Z", venue:"Lincoln Financial, Philly",    durationMins:105 },
   { stage:"Group", home:"Algeria",     away:"Austria",       group:"J", utc:"2026-06-28T02:00:00Z", venue:"Arrowhead Stadium, KC",        durationMins:105 },
@@ -158,16 +160,16 @@ const SCHEDULE = [
   { stage:"R32", home:"France",        away:"Sweden",        group:"", utc:"2026-06-30T21:00:00Z", venue:"MetLife Stadium, NJ",          durationMins:120, note:"M77 · Grp I W vs Grp F 3rd" },
   { stage:"R32", home:"Mexico",        away:"Scotland",      group:"", utc:"2026-07-01T01:00:00Z", venue:"Estadio Azteca, Mexico City",  durationMins:120, note:"M79 · Grp A W vs Grp C 3rd 🏴󠁧󠁢󠁳󠁣󠁴󠁿" },
   // Jul 1 ET (Jul 2 PHT)
-  { stage:"R32", home:"England",       away:"TBD Grp H 3rd", group:"", utc:"2026-07-01T17:00:00Z", venue:"Mercedes-Benz, Atlanta",       durationMins:120, note:"M80 · Grp L W vs 3rd E/H/I/J/K" },
-  { stage:"R32", home:"TBD Grp G W",   away:"TBD Grp A 3rd", group:"", utc:"2026-07-01T21:00:00Z", venue:"Lumen Field, Seattle",         durationMins:120, note:"M82 · Egypt/Iran vs 3rd A/E/H/I/J" },
+  { stage:"R32", home:"England",       away:"Cape Verde",     group:"", utc:"2026-07-01T17:00:00Z", venue:"Mercedes-Benz, Atlanta",       durationMins:120, note:"M80 · Grp L W vs Grp H RU" },
+  { stage:"R32", home:"Belgium",        away:"TBD 3rd",        group:"", utc:"2026-07-01T21:00:00Z", venue:"Lumen Field, Seattle",         durationMins:120, note:"M82 · Grp G W vs 3rd A/E/H/I/J" },
   { stage:"R32", home:"USA",           away:"Bosnia",        group:"", utc:"2026-07-02T00:00:00Z", venue:"Levi's Stadium, SF",           durationMins:120, note:"M81" },
   // Jul 2 ET (Jul 3 PHT)
-  { stage:"R32", home:"TBD Grp H W",   away:"TBD Grp J RU",  group:"", utc:"2026-07-02T19:00:00Z", venue:"SoFi Stadium, LA",             durationMins:120, note:"M84 · Spain/Uruguay vs Austria/Algeria" },
+  { stage:"R32", home:"Spain",          away:"TBD Grp J RU",  group:"", utc:"2026-07-02T19:00:00Z", venue:"SoFi Stadium, LA",             durationMins:120, note:"M84 · Grp H W vs Grp J RU · Spain vs Austria or Algeria" },
   { stage:"R32", home:"TBD Grp K RU",  away:"TBD Grp L RU",  group:"", utc:"2026-07-02T23:00:00Z", venue:"BMO Field, Toronto",           durationMins:120, note:"M83 · Portugal vs Ghana/Croatia" },
   { stage:"R32", home:"Switzerland",   away:"TBD 3rd",       group:"", utc:"2026-07-03T03:00:00Z", venue:"BC Place, Vancouver",          durationMins:120, note:"M85 · vs 3rd E/F/G/I/J" },
   // Jul 3 ET (Jul 4 PHT)
-  { stage:"R32", home:"TBD Grp D RU",  away:"TBD Grp G RU",  group:"", utc:"2026-07-03T18:00:00Z", venue:"AT&T Stadium, Dallas",         durationMins:120, note:"M88 · Australia vs Iran/Egypt RU" },
-  { stage:"R32", home:"Argentina",     away:"TBD Grp H RU",  group:"", utc:"2026-07-03T22:00:00Z", venue:"Hard Rock Stadium, Miami",     durationMins:120, note:"M86 · vs Uruguay/Cape Verde" },
+  { stage:"R32", home:"Australia",      away:"Egypt",          group:"", utc:"2026-07-03T18:00:00Z", venue:"AT&T Stadium, Dallas",         durationMins:120, note:"M88 · Grp D RU vs Grp G RU" },
+  { stage:"R32", home:"Argentina",     away:"Cape Verde",     group:"", utc:"2026-07-03T22:00:00Z", venue:"Hard Rock Stadium, Miami",     durationMins:120, note:"M86 · Grp J W vs Grp H RU" },
   { stage:"R32", home:"TBD Grp K W",   away:"TBD 3rd",       group:"", utc:"2026-07-04T01:30:00Z", venue:"Arrowhead Stadium, KC",        durationMins:120, note:"M87 · Colombia vs 3rd D/E/I/J/L" },
 
   // ── ROUND OF 16 ───────────────────────────────────────────────────────────
@@ -394,7 +396,7 @@ export default function App() {
       {tab === 1 && (
         <div style={{ padding:"14px 12px" }}>
           <div style={{ background:"#fef9c3", border:"1px solid #fde047", borderRadius:"8px", padding:"10px 14px", marginBottom:"14px", fontSize:"12px", color:"#854d0e" }}>
-            ✅ <strong>Groups A–F complete.</strong> Paraguay D 0–0 Australia (both through) · Turkey W 2–3 USA but eliminated on tiebreaker · Ecuador/Sweden/Bosnia/Paraguay confirmed through as 3rd-place qualifiers
+            ✅ <strong>Groups A–I complete!</strong> Belgium 5–1 NZ (Grp G winners) · Egypt 1–1 Iran (Egypt through, Iran OUT on VAR 💔) · Spain 1–0 Uruguay · Cape Verde 0–0 S.Arabia · Groups J, K, L play today Jun 27
           </div>
           <div style={{ display:"flex", alignItems:"center", gap:"12px", marginBottom:"14px" }}>
             <label style={{ fontSize:"12px", color:"#64748b", display:"flex", alignItems:"center", gap:"6px", cursor:"pointer" }}>
