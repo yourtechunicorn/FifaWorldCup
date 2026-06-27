@@ -56,7 +56,6 @@ const ELIMINATED = [
   { name:"Uruguay",    group:"H" },
   { name:"Saudi Arabia",group:"H" },
   { name:"New Zealand", group:"G" },
-  { name:"Iran",        group:"G" },
 ];
 
 const ALL_TEAMS = [
@@ -86,9 +85,9 @@ const ALL_TEAMS = [
   { name:"Tunisia",      group:"F", pos:4, pts:0, status:"eliminated", prob:0,    note:"L 1–3 vs Netherlands" },
   { name:"Belgium",      group:"G", pos:1, pts:5,  status:"confirmed",  prob:null, note:"Group winner · W 5–1 vs New Zealand · Lukaku finally scores!" },
   { name:"Egypt",        group:"G", pos:2, pts:5,  status:"confirmed",  prob:null, note:"Runner-up · D 1–1 vs Iran · confirmed through" },
-  { name:"Iran",         group:"G", pos:3, pts:3,  status:"eliminated", prob:0,    note:"D 1–1 vs Egypt · VAR ruled out 90+min winner · heartbreak 💔" },
+  { name:"Iran",         group:"G", pos:3, pts:3,  status:"bubble",     prob:45,   note:"D 1–1 vs Egypt · VAR heartbreak 💔 · still alive as 3rd place!" },
   { name:"New Zealand",  group:"G", pos:4, pts:1,  status:"eliminated", prob:0,    note:"L 1–5 vs Belgium · eliminated" },
-  { name:"Spain",        group:"H", pos:1, pts:10, status:"confirmed",  prob:null, note:"Group winner · W 1–0 vs Uruguay" },
+  { name:"Spain",        group:"H", pos:1, pts:7,  status:"confirmed",  prob:null, note:"Group winner · W 1–0 vs Uruguay" },
   { name:"Cape Verde",   group:"H", pos:2, pts:5,  status:"confirmed",  prob:null, note:"Runner-up · D 0–0 vs Saudi Arabia · confirmed through!" },
   { name:"Uruguay",      group:"H", pos:3, pts:3,  status:"eliminated", prob:0,    note:"L 0–1 vs Spain · eliminated" },
   { name:"Saudi Arabia", group:"H", pos:4, pts:2,  status:"eliminated", prob:0,    note:"D 0–0 vs Cape Verde · eliminated" },
@@ -129,6 +128,7 @@ const THIRD_TEAMS = [
   { team:"Algeria",     group:"J", pts:3, gf:2, ga:4, done:false, opp:"Austria",       date:"Sat Jun 28", w:44.2, d:26.8, l:29.0 },
   { team:"Cape Verde",  group:"H", pts:5, gf:2, ga:2, done:true,  result:"D 0–0 vs Saudi Arabia · confirmed through!" },
   { team:"Belgium",     group:"G", pts:5, gf:6, ga:2, done:true,  result:"W 5–1 vs New Zealand" },
+  { team:"Iran",         group:"G", pts:3, gf:3, ga:3, done:true,  result:"D 1–1 vs Egypt · VAR 💔 · still alive" },
   { team:"DR Congo",    group:"K", pts:1, gf:1, ga:2, done:false, opp:"Uzbekistan",    date:"Sun Jun 29", w:32.2, d:29.2, l:38.6 },
   { team:"Senegal",     group:"I", pts:3, gf:8, ga:6, done:true,  result:"W 5–0 vs Iraq 🚨" },
 ];
@@ -199,7 +199,108 @@ const SCHEDULE = [
 
 const ptsDelta = { Win:3, Draw:1, Loss:0 };
 const gdDelta  = { Win:1, Draw:0, Loss:-2 };
-const TABS = ["All 48 teams", "3rd place race", "Schedule"];
+
+// Full group standings with form, GF, GA for all 48 teams
+const GROUP_STANDINGS = {
+  A: {
+    teams: [
+      { name:"Mexico",       pts:9, gf:6, ga:1, form:["W","W","W"] },
+      { name:"South Africa", pts:6, gf:2, ga:2, form:["L","W","W"] },
+      { name:"South Korea",  pts:3, gf:3, ga:4, form:["W","L","L"] },
+      { name:"Czechia",      pts:1, gf:3, ga:7, form:["L","D","L"] },
+    ]
+  },
+  B: {
+    teams: [
+      { name:"Switzerland",  pts:7, gf:8, ga:3, form:["D","W","W"] },
+      { name:"Canada",       pts:4, gf:8, ga:2, form:["D","W","L"] },
+      { name:"Bosnia",       pts:4, gf:5, ga:6, form:["D","W","W"] },
+      { name:"Qatar",        pts:1, gf:2, ga:12,form:["D","L","L"] },
+    ]
+  },
+  C: {
+    teams: [
+      { name:"Brazil",       pts:7, gf:7, ga:2, form:["D","W","W"] },
+      { name:"Morocco",      pts:7, gf:6, ga:1, form:["D","W","W"] },
+      { name:"Scotland",     pts:3, gf:2, ga:4, form:["W","L","L"] },
+      { name:"Haiti",        pts:0, gf:2, ga:10,form:["L","L","L"] },
+    ]
+  },
+  D: {
+    teams: [
+      { name:"USA",          pts:6, gf:8, ga:3, form:["W","W","L"] },
+      { name:"Australia",    pts:5, gf:3, ga:2, form:["W","W","D"] },
+      { name:"Paraguay",     pts:4, gf:2, ga:4, form:["W","L","D"] },
+      { name:"Turkey",       pts:3, gf:3, ga:7, form:["L","L","W"] },
+    ]
+  },
+  E: {
+    teams: [
+      { name:"Ivory Coast",  pts:7, gf:5, ga:2, form:["W","W","W"] },
+      { name:"Germany",      pts:6, gf:8, ga:3, form:["W","W","L"] },
+      { name:"Ecuador",      pts:4, gf:3, ga:3, form:["L","L","W"] },
+      { name:"Curaçao",      pts:1, gf:1, ga:9, form:["L","L","L"] },
+    ]
+  },
+  F: {
+    teams: [
+      { name:"Netherlands",  pts:7, gf:8, ga:4, form:["W","W","W"] },
+      { name:"Japan",        pts:5, gf:4, ga:3, form:["W","W","D"] },
+      { name:"Sweden",       pts:4, gf:7, ga:7, form:["D","W","D"] },
+      { name:"Tunisia",      pts:0, gf:2, ga:7, form:["L","L","L"] },
+    ]
+  },
+  G: {
+    teams: [
+      { name:"Belgium",      pts:5, gf:6, ga:2, form:["D","D","W"] },
+      { name:"Egypt",        pts:5, gf:5, ga:3, form:["D","W","D"] },
+      { name:"Iran",         pts:3, gf:4, ga:4, form:["D","D","D"] },
+      { name:"New Zealand",  pts:1, gf:4, ga:10,form:["D","L","L"] },
+    ]
+  },
+  H: {
+    teams: [
+      { name:"Spain",        pts:7, gf:5, ga:1, form:["D","W","W"] },
+      { name:"Cape Verde",   pts:5, gf:2, ga:2, form:["D","D","D"] },
+      { name:"Uruguay",      pts:3, gf:3, ga:4, form:["D","W","L"] },
+      { name:"Saudi Arabia", pts:2, gf:2, ga:5, form:["D","L","D"] },
+    ]
+  },
+  I: {
+    teams: [
+      { name:"France",       pts:9, gf:10,ga:2, form:["W","W","W"] },
+      { name:"Norway",       pts:6, gf:8, ga:5, form:["W","W","L"] },
+      { name:"Senegal",      pts:3, gf:8, ga:7, form:["L","L","W"] },
+      { name:"Iraq",         pts:0, gf:1, ga:13,form:["L","L","L"] },
+    ]
+  },
+  J: {
+    teams: [
+      { name:"Argentina",    pts:6, gf:5, ga:0, form:["W","W","?"] },
+      { name:"Austria",      pts:6, gf:3, ga:2, form:["W","W","?"] },
+      { name:"Algeria",      pts:3, gf:2, ga:4, form:["L","W","?"] },
+      { name:"Jordan",       pts:1, gf:2, ga:4, form:["L","D","?"] },
+    ]
+  },
+  K: {
+    teams: [
+      { name:"Colombia",     pts:6, gf:4, ga:1, form:["W","W","?"] },
+      { name:"Portugal",     pts:4, gf:6, ga:1, form:["D","W","?"] },
+      { name:"DR Congo",     pts:1, gf:1, ga:3, form:["D","L","?"] },
+      { name:"Uzbekistan",   pts:1, gf:1, ga:7, form:["L","L","?"] },
+    ]
+  },
+  L: {
+    teams: [
+      { name:"England",      pts:4, gf:4, ga:2, form:["W","D","?"] },
+      { name:"Ghana",        pts:4, gf:2, ga:1, form:["W","D","?"] },
+      { name:"Croatia",      pts:3, gf:3, ga:4, form:["L","W","?"] },
+      { name:"Panama",       pts:0, gf:0, ga:2, form:["L","L","?"] },
+    ]
+  },
+};
+
+const TABS = ["All 48 teams", "3rd place race", "Group Standings", "Schedule"];
 
 const STAGE_CONFIG = {
   "Group": { label:"Group Stage",    color:"#2563eb", bg:"#eff6ff" },
@@ -494,8 +595,80 @@ export default function App() {
         </div>
       )}
 
-      {/* TAB 2: Schedule */}
+      {/* TAB 2: Group Standings */}
       {tab === 2 && (
+        <div style={{ padding:"14px 12px" }}>
+          <div style={{ fontSize:"12px", color:"#64748b", marginBottom:"14px" }}>
+            Pts · GD · GF · GA · Form (last 3) · Best 3rd tiebreakers: Points → GD → Goals scored → Fair play → FIFA ranking
+          </div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(min(320px,100%), 1fr))", gap:"12px" }}>
+            {Object.entries(GROUP_STANDINGS).map(([grp, data]) => (
+              <div key={grp} style={{ background:"#fff", borderRadius:"10px", border:"1px solid #e2e8f0", overflow:"hidden", boxShadow:"0 1px 3px rgba(0,0,0,0.05)" }}>
+                <div style={{ background:"#f1f5f9", padding:"6px 12px", fontSize:"11px", fontWeight:"700", color:"#475569", letterSpacing:"1px", textTransform:"uppercase" }}>Group {grp}</div>
+                <table style={{ width:"100%", borderCollapse:"collapse", fontSize:"11px" }}>
+                  <thead>
+                    <tr style={{ background:"#f8fafc", borderBottom:"1px solid #f1f5f9" }}>
+                      <th style={{ padding:"5px 8px", textAlign:"left", fontSize:"9px", fontWeight:"600", color:"#94a3b8", textTransform:"uppercase" }}>Team</th>
+                      <th style={{ padding:"5px 4px", textAlign:"center", fontSize:"9px", fontWeight:"600", color:"#94a3b8", textTransform:"uppercase" }}>Pts</th>
+                      <th style={{ padding:"5px 4px", textAlign:"center", fontSize:"9px", fontWeight:"600", color:"#94a3b8", textTransform:"uppercase" }}>GD</th>
+                      <th style={{ padding:"5px 4px", textAlign:"center", fontSize:"9px", fontWeight:"600", color:"#94a3b8", textTransform:"uppercase" }}>GF</th>
+                      <th style={{ padding:"5px 4px", textAlign:"center", fontSize:"9px", fontWeight:"600", color:"#94a3b8", textTransform:"uppercase" }}>GA</th>
+                      <th style={{ padding:"5px 8px", textAlign:"center", fontSize:"9px", fontWeight:"600", color:"#94a3b8", textTransform:"uppercase" }}>Form</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.teams.map((t, ti) => {
+                      const gd = t.gf - t.ga;
+                      const gdStr = gd > 0 ? `+${gd}` : `${gd}`;
+                      const isElim = ALL_TEAMS.find(a => a.name === t.name)?.status === "eliminated";
+                      const isConfirmed = ALL_TEAMS.find(a => a.name === t.name)?.status === "confirmed";
+                      const rowBg = isConfirmed ? "#f0fdf4" : isElim ? "#fafafa" : "#fff";
+                      const borderColor = isConfirmed ? "#86efac" : isElim ? "#e2e8f0" : "#e2e8f0";
+                      return (
+                        <tr key={t.name} style={{ borderBottom: ti < data.teams.length-1 ? "1px solid #f1f5f9" : "none", background:rowBg, borderLeft:`3px solid ${borderColor}` }}>
+                          <td style={{ padding:"7px 8px" }}>
+                            <div style={{ display:"flex", alignItems:"center", gap:"6px" }}>
+                              <span style={{ fontSize:"13px" }}>{flag(t.name)}</span>
+                              <span style={{ fontSize:"11px", fontWeight:"600", color: isElim ? "#94a3b8" : "#1e293b", textDecoration: isElim ? "line-through" : "none" }}>{t.name}</span>
+                            </div>
+                          </td>
+                          <td style={{ padding:"7px 4px", textAlign:"center" }}>
+                            <span style={{ fontWeight:"800", fontSize:"13px", color: t.pts >= 6 ? "#16a34a" : t.pts >= 3 ? "#ca8a04" : "#dc2626" }}>{t.pts}</span>
+                          </td>
+                          <td style={{ padding:"7px 4px", textAlign:"center" }}>
+                            <span style={{ fontWeight:"600", color: gd > 0 ? "#16a34a" : gd === 0 ? "#64748b" : "#dc2626" }}>{gdStr}</span>
+                          </td>
+                          <td style={{ padding:"7px 4px", textAlign:"center", color:"#475569" }}>{t.gf}</td>
+                          <td style={{ padding:"7px 4px", textAlign:"center", color:"#475569" }}>{t.ga}</td>
+                          <td style={{ padding:"7px 8px" }}>
+                            <div style={{ display:"flex", gap:"2px", justifyContent:"center" }}>
+                              {t.form.map((r, ri) => (
+                                <span key={ri} style={{
+                                  fontSize:"9px", fontWeight:"700",
+                                  width:"16px", height:"16px", borderRadius:"3px",
+                                  display:"flex", alignItems:"center", justifyContent:"center",
+                                  background: r==="W" ? "#dcfce7" : r==="D" ? "#dbeafe" : r==="L" ? "#fee2e2" : "#f1f5f9",
+                                  color: r==="W" ? "#166534" : r==="D" ? "#1e40af" : r==="L" ? "#991b1b" : "#94a3b8",
+                                }}>{r}</span>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop:"14px", fontSize:"10px", color:"#94a3b8" }}>
+            Groups J, K, L still playing Jun 27 · ? = match not yet played · Green rows = confirmed through · Strikethrough = eliminated
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: Schedule */}
+      {tab === 3 && (
         <div style={{ padding:"14px 12px" }}>
           {/* Stage filter pills */}
           <div style={{ display:"flex", gap:"6px", flexWrap:"wrap", marginBottom:"14px", overflowX:"auto", WebkitOverflowScrolling:"touch", paddingBottom:"4px" }}>
